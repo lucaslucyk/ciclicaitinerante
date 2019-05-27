@@ -5,9 +5,11 @@ from django.conf import settings
 from django.urls import reverse
 from django.db import models
 from django.db.models.signals import pre_save
+from django.utils.safestring import mark_safe
 from django.utils import timezone
 
 from django.utils.text import slugify
+from markdown_deux import markdown
 # Create your models here.
 # MVC MODEL VIEW CONTROLLER
 
@@ -75,7 +77,12 @@ class Post(models.Model):
 
     class Meta:
         ordering = ["-timestamp", "-updated"]
-       
+    
+    def get_markdown(self):
+        content = self.content
+        markdown_text = markdown(content)
+        return mark_safe(markdown_text)
+
 #    @property
 #    def title(self):
 #        return "Title"
