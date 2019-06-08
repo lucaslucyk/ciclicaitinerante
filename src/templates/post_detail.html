@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load urlify %}
-
+{% load crispy_forms_tags %}
 {% block head_title %}
 {{ object.title }} | {{ block.super }}
 {% endblock head_title %}
@@ -12,9 +12,9 @@
     {% if object.image %}
     <img src='{{ object.image.url }}' class='img-responsive' />
     {% endif %}
-<h1>{{ object.title }} <small>{% if object.draft %}<span style='color:red;'>Draft</span> {% endif %}{{ object.publish }}</small></h1>
+<h1>{{ object.title }} <small>{% if object.draft %}<span style='color:red;'>Borrador</span> {% endif %}{{ object.publish }}</small></h1>
 {% if object.user.get_full_name %}
-<p>Author: {{ object.user.get_full_name }}</p>
+<p>Autor: {{ object.user.get_full_name }}</p>
 {% endif %}
 
 <p><div class="fb-like" data-href="{{ request.build_absolute_uri }}" data-layout="button_count" data-action="like" data-show-faces="true" data-share="true"></div>
@@ -47,7 +47,42 @@ Linkedin
 
 <hr/>
 <br/>
-<div class="fb-comments" data-href="{{ request.build_absolute_uri }}" data-numposts="5"></div>
+<div>
+    <p class="lead">Commentarios</p>
+
+    <form method="POST" action="."> {% csrf_token %}
+        {{ comment_form|crispy }}
+        <input type="submit" value="Comentar" name="" class="btn btn-default" />
+    </form>
+
+    {% for comment in comments %}
+        <hr/>
+        <blockquote>
+            <p>{{ comment.content }}</p>
+            <footer>Por {{ comment.user }} hace {{ comment.timestamp|timesince }} 
+                {% if comment.children.count > 0 %}
+                    | {{ comment.children.count }} comentario{% if comment.children.count > 1 %}s{% endif %}
+                {% endif %}
+             | <a class="comment-reply-btn" href="#">Responder</a></footer>
+            <div class="comment-reply">
+                {% for child_comment in comment.children %}
+                    <blockquote>
+                        <p>{{ child_comment.content }}</p>
+                        <footer>Por {{ child_comment.user }} hace {{ child_comment.timestamp|timesince }}</footer>
+                    </blockquote>
+                {% endfor %}
+
+                <form method="POST" action="."> {% csrf_token %}
+                    {{ comment_form|crispy }}
+                    <input type="hidden" name="parent_id" value="{{ comment.id }}">
+                    <input type="submit" value="Responder" name="" class="btn btn-default" />
+                </form>
+            </div>
+
+        </blockquote>
+        <hr/>
+    {% endfor %}
+</div>
 
 </div>
 </div>
