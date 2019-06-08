@@ -63,7 +63,9 @@ Linkedin
                 {% if comment.children.count > 0 %}
                     | {{ comment.children.count }} comentario{% if comment.children.count > 1 %}s{% endif %}
                 {% endif %}
-             | <a class="comment-reply-btn" href="#">Responder</a></footer>
+             | <a class="comment-reply-btn" href="#">Responder</a> |
+            <a href="{{ comment.get_absolute_url }}">Historia</a>
+            </footer>
             <div class="comment-reply">
                 {% for child_comment in comment.children %}
                     <blockquote>

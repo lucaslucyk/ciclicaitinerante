@@ -23,6 +23,7 @@ from django.contrib import admin
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('posts/', include("posts.urls")),
+    path('comments/', include("comments.urls")),
     #url(r'^posts/$', "<appname>.views.<function_name>"),
 ]
 
