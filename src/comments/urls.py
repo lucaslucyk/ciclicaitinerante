@@ -4,11 +4,12 @@ from django.contrib import admin
 
 from .views import (
 	comment_thread,
+    comment_delete,
 	)
 
 app_name = 'comments'
 
 urlpatterns = [
     re_path(r'^(?P<id>\d+)/$', comment_thread, name='comment_thread'),
-    #re_path(r'^(?P<id>\w+)/delete/$', comment_delete),
+    re_path(r'^(?P<id>\w+)/delete/$', comment_delete, name='comment_delete'),
 ]

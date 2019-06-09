@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load urlify %}
+{% load crispy_forms_tags %}
+{% block head_title %}
+{{ object.title }} | {{ block.super }}
+{% endblock head_title %}
+
+
+
+{% block content %}
+
+<div class='col-sm-6 col-sm-offset-3'>
+<h1>Confirmar eliminaci&oacute;n</h1>
+    <form method="POST" action="."> {% csrf_token %}
+        <p>¿Seguro que desea eliminar el comentario &quot;{{ object.content }}&quot; ?</p>
+        <input type="submit" value="Confirmar" class="btn btn-danger" />
+        <a href="{{ object.get_absolute_url }}" class="btn btn-default">Cancelar</a>
+    </form>
+
+</div>
+
+
+{% endblock content %}

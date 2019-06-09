@@ -13,8 +13,16 @@
     <img src='{{ object.image.url }}' class='img-responsive' />
     {% endif %}
 <h1>{{ object.title }} <small>{% if object.draft %}<span style='color:red;'>Borrador</span> {% endif %}{{ object.publish }}</small></h1>
+
+<p> Tiempo de lectura:
+    {% if object.read_time <= 1 %} menos de 1 minuto.
+    {% else %}
+    {{ object.read_time }} minutos.
+    {% endif %}
+</p>
+
 {% if object.user.get_full_name %}
-<p>Autor: {{ object.user.get_full_name }}</p>
+    <p>Autor: {{ object.user.get_full_name }}</p>
 {% endif %}
 
 <p><div class="fb-like" data-href="{{ request.build_absolute_uri }}" data-layout="button_count" data-action="like" data-show-faces="true" data-share="true"></div>
@@ -63,14 +71,18 @@ Linkedin
                 {% if comment.children.count > 0 %}
                     | {{ comment.children.count }} comentario{% if comment.children.count > 1 %}s{% endif %}
                 {% endif %}
-             | <a class="comment-reply-btn" href="#">Responder</a> |
-            <a href="{{ comment.get_absolute_url }}">Historia</a>
+                | <a class="comment-reply-btn" href="#">Responder</a> |
+                <a href="{{ comment.get_absolute_url }}">Historia</a>
+                {% if request.user == comment.user %}| <a href="{{ comment.get_delete_url }}">Eliminar</a> {% endif %}
             </footer>
             <div class="comment-reply">
                 {% for child_comment in comment.children %}
                     <blockquote>
                         <p>{{ child_comment.content }}</p>
-                        <footer>Por {{ child_comment.user }} hace {{ child_comment.timestamp|timesince }}</footer>
+                        <footer>
+                            Por {{ child_comment.user }} hace {{ child_comment.timestamp|timesince }}
+                            {% if request.user == comment.user %}| <a href="{{ child_comment.get_delete_url }}">Eliminar</a> {% endif %}
+                        </footer>
                     </blockquote>
                 {% endfor %}
 
@@ -78,6 +90,7 @@ Linkedin
                     {{ comment_form|crispy }}
                     <input type="hidden" name="parent_id" value="{{ comment.id }}">
                     <input type="submit" value="Responder" name="" class="btn btn-default" />
+
                 </form>
             </div>
 

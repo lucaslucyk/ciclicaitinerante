@@ -1,4 +1,4 @@
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import render, get_object_or_404
@@ -8,8 +8,35 @@ from .models import Comment
 from .forms import CommentForm
 
 
+def comment_delete(request, id):
+    #obj = get_object_or_404(Comment, id=id)
+    try:
+        obj = Comment.objects.get(id=id)
+    except:
+        raise Http404
+
+    if obj.user != request.user:
+        #messages.success(request, "No eres el autor del comentario.")
+        response = HttpResponse("No tienes permiso de ver este sitio.")
+        response.status_code = 403
+        return response
+
+    if request.method == "POST":
+        parent_obj_url = obj.content_object.get_absolute_url()
+        obj.delete()
+        messages.success(request, "El comentario fue eliminado.")
+        return HttpResponseRedirect(parent_obj_url)
+    context = {
+        "object": obj,
+    }
+    return render(request, "confirm_delete.html", context)
+
 def comment_thread(request, id):
-    obj               = get_object_or_404(Comment, id=id)
+    #obj               = get_object_or_404(Comment, id=id)
+    try:
+        obj = Comment.objects.get(id=id)
+    except:
+        raise Http404
     
     content_object    = obj.content_object #post del comentario
     content_id        = obj.content_object.id

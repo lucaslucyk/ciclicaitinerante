@@ -1,3 +1,8 @@
+#import datetime
+import math
+from re import findall
+from django.utils.html import strip_tags
+
 from django.utils.text import slugify
 
 '''
@@ -29,3 +34,20 @@ def unique_slug_generator(instance, new_slug=None):
                 )
         return unique_slug_generator(instance, new_slug=new_slug)
     return slug
+
+def count_words(html_string):
+    """
+        <h1> This is a title </h1>
+    """
+    word_string   = strip_tags(html_string)
+    matching_words= findall(r'\w+', word_string) #of re
+    count         = len(matching_words)
+    return count
+
+def get_read_time(html_string):
+    count        = count_words(html_string)
+    read_time_min= math.ceil(count / 200.0) #asumiendo 200 palabras por minuto
+    #read_time_sec= read_time_min * 60
+    #read_time    = str(datetime.timedelta(seconds=read_time_sec))
+    #read_time    = str(datetime.timedelta(minutes=read_time_min))
+    return int(read_time_min)
