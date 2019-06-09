@@ -9,8 +9,8 @@
 
 {% block content %}
 <div class="col-sm-6">
-    <h1>Preview</h1>
-    </hr>
+    <h1 class="text-center">Vista previa</h1>
+    <hr />
     <div class="content-preview">
         <h3 id="preview-title"></h3>
         {# <input id="preview-title"> #}
@@ -18,11 +18,11 @@
     </div>
 </div>
 <div class='col-sm-6'>
-<h1>Form</h1>
-</hr>
+<h1 class="text-center">Formulario</h1>
+<hr />
 <form method='POST' action='' enctype='multipart/form-data'>{% csrf_token %}
 {{ form|crispy }}
-<input type='submit' class='btn btn-default' value='Create Post' />
+<input type='submit' class='btn btn-default' value='Guardar' />
 </form>
 </div>
 {% endblock content %}
