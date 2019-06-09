@@ -9,22 +9,22 @@ from .forms import CommentForm
 
 
 def comment_thread(request, id):
-    obj = get_object_or_404(Comment, id=id)
+    obj               = get_object_or_404(Comment, id=id)
     
-    content_object = obj.content_object #post del comentario
-    content_id = obj.content_object.id
-    initial_data = {
+    content_object    = obj.content_object #post del comentario
+    content_id        = obj.content_object.id
+    initial_data      = {
         "content_type": obj.content_type,
-        "object_id": obj.object_id
+        "object_id"   : obj.object_id
     }
-    form = CommentForm(request.POST or None, initial=initial_data)
+    form              = CommentForm(request.POST or None, initial=initial_data)
     #print(form.cleaned_data)
     if form.is_valid():
-        c_type = form.cleaned_data.get("content_type")
-        content_type = ContentType.objects.get(model=c_type)
-        obj_id = form.cleaned_data.get("object_id")
-        content_data = form.cleaned_data.get("content")
-        parent_obj = None
+        c_type      = form.cleaned_data.get("content_type")
+        content_type= ContentType.objects.get(model=c_type)
+        obj_id      = form.cleaned_data.get("object_id")
+        content_data= form.cleaned_data.get("content")
+        parent_obj  = None
 
         try:
             parent_id = int(request.POST.get("parent_id"))
@@ -37,17 +37,17 @@ def comment_thread(request, id):
                 parent_obj = parent_qs.first()
 
         new_comment, created = Comment.objects.get_or_create(
-                                    user = request.user,
-                                    content_type = content_type,
-                                    object_id = obj_id,
-                                    content = content_data,
-                                    parent = parent_obj
+                                    user        = request.user,
+                                    content_type= content_type,
+                                    object_id   = obj_id,
+                                    content     = content_data,
+                                    parent      = parent_obj
                                 )
         return HttpResponseRedirect(new_comment.content_object.get_absolute_url())
 
     context = {
         "comment": obj,
-        "form": form,
+        "form"   : form,
     }
 
     return render(request, "comment_thread.html", context)
