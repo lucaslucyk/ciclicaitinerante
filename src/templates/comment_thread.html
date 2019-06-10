@@ -26,16 +26,19 @@
                         <p>{{ child_comment.content }}</p>
                         <footer>
                             Por {{ child_comment.user }} hace {{ child_comment.timestamp|timesince }}
-                            {% if request.user == comment.user %}| <a href="{{ child_comment.get_delete_url }}">Eliminar</a> {% endif %}
+                            {% if request.user == child_comment.user %}| <a href="{{ child_comment.get_delete_url }}">Eliminar</a> {% endif %}
                         </footer>
                     </blockquote>
                 {% endfor %}
-
-                <form method="POST" action="."> {% csrf_token %}
-                    {{ form|crispy }}
-                    <input type="hidden" name="parent_id" value="{{ comment.id }}">
-                    <input type="submit" value="Responder" name="" class="btn btn-default" />
-                </form>
+                {% if request.user.is_authenticated %}
+                    <form method="POST" action="."> {% csrf_token %}
+                        {{ form|crispy }}
+                        <input type="hidden" name="parent_id" value="{{ comment.id }}">
+                        <input type="submit" value="Responder" name="" class="btn btn-default" />
+                    </form>
+                {% else %}
+                    <p>Inicia sesi&oacute;n para comentar</p>
+                {% endif %}
             </div>
 
         </blockquote>

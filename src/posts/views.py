@@ -9,6 +9,7 @@ except:
     pass
 
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
@@ -22,6 +23,7 @@ from comments.models import Comment
 from .forms import PostForm
 from .models import Post
 
+@login_required
 def post_create(request):
     if not request.user.is_staff or not request.user.is_superuser:
         raise Http404
@@ -88,7 +90,7 @@ def post_detail(request, slug=None):
 
     form = CommentForm(request.POST or None, initial=initial_data)
 
-    if form.is_valid():
+    if form.is_valid() and request.user.is_authenticated:
         c_type      = form.cleaned_data.get("content_type")
         content_type= ContentType.objects.get(model=c_type)
         obj_id      = form.cleaned_data.get("object_id")
@@ -163,6 +165,7 @@ def post_list(request):
     }
     return render(request, "post_list.html", context)
 
+@login_required
 def post_update(request, slug=None):
     if not request.user.is_staff or not request.user.is_superuser:
         raise Http404
@@ -178,16 +181,40 @@ def post_update(request, slug=None):
     context = {
         "title"   : instance.title,
         "instance": instance,
-        "form"    :form,
+        "form"    : form,
     }
     return render(request, "post_form.html", context)
 
 
-
+@login_required
 def post_delete(request, slug=None):
     if not request.user.is_staff or not request.user.is_superuser:
         raise Http404
-    instance = get_object_or_404(Post, slug=slug)
-    instance.delete()
-    messages.success(request, "Eliminación completa")
-    return redirect("posts:list")
+
+    try:
+        obj = Post.objects.get(slug=slug)
+    except:
+        raise Http404
+
+    if obj.user != request.user:
+        response = HttpResponse("No tienes permiso para eliminar este Post.")
+        response.status_code = 403
+        return response
+
+    if request.method == "POST":
+        obj.delete()
+        messages.success(request, "El post fue eliminado.")
+        return redirect("posts:list")
+
+    context = {
+        "object": obj,
+        "title_post": obj.title,
+    }
+    return render(request, "confirm_delete.html", context)
+
+
+    # #instance = get_object_or_404(Post, slug=slug)
+    # instance.delete()
+    # messages.success(request, "Eliminación completa")
+    # return redirect("posts:list")
+

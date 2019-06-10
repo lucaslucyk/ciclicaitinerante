@@ -12,7 +12,13 @@
 <div class='col-sm-6 col-sm-offset-3'>
 <h1>Confirmar eliminaci&oacute;n</h1>
     <form method="POST" action="."> {% csrf_token %}
-        <p>¿Seguro que desea eliminar el comentario &quot;{{ object.content }}&quot; ?</p>
+        <p>¿Seguro que desea eliminar el 
+			{% if title_post %}
+				post &quot;{{ title_post }}&quot; ?
+			{% else %}
+        	comentario &quot;{{ object.content }}&quot; ?
+        	{% endif %}
+    	</p>
         <input type="submit" value="Confirmar" class="btn btn-danger" />
         <a href="{{ object.get_absolute_url }}" class="btn btn-default">Cancelar</a>
     </form>

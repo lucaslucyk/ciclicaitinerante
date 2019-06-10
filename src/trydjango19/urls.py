@@ -25,13 +25,18 @@ from accounts.views import (
     register_view,
     logout_view,
     )
+from posts.views import (
+    post_create,
+    )
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('posts/', include("posts.urls")),
     path('comments/', include("comments.urls")),
     path('login/', login_view, name="login"),
     path('logout/', logout_view, name="logout"),
+    path('registro/', register_view, name="register"),
+    path('nuevo-post/', post_create, name="post_create"),
+    path('', include("posts.urls")),
     #url(r'^posts/$', "<appname>.views.<function_name>"),
 ]
 
